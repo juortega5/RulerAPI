@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Personas;
-use Session;
+use App\Cursos_personas;
+use App\Trabajos;
+use App\Materias_personas;
+use App\Notas;
 
-class PersonasController extends Controller
+
+class EstudiantesController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,8 +18,10 @@ class PersonasController extends Controller
      */
     public function index()
     {
-        session()->forget('id');
-        return redirect('/');
+        $objCursosPersonas = new Cursos_personas();
+        $curso = $objCursosPersonas->buscarCurso(session('id'));
+        $trabajos = Trabajos::buscarTrabajosEstudiantes($curso[0]->id_curso);
+        return view('estudiantes.subTable',compact('trabajos'));
     }
 
     /**
@@ -26,7 +31,7 @@ class PersonasController extends Controller
      */
     public function create()
     {
-        //
+        
     }
 
     /**
@@ -37,16 +42,7 @@ class PersonasController extends Controller
      */
     public function store(Request $request)
     {
-        
-        $persona = new Personas();
-        $consulta = $persona->where('usuario','=',$request->input('nombre'),'and')->
-                            where('password','=',$request->input('password'))->first();
-        if (empty($consulta))
-        {
-           return redirect('/');
-        }
-        session(['id' => $consulta->id,'nombre' => $consulta->nombre,'user'=>$consulta->id_tipo_usuario]);
-        return view('personas.index',compact('consulta'));
+        //
     }
 
     /**
@@ -57,7 +53,10 @@ class PersonasController extends Controller
      */
     public function show($id)
     {
-        //
+        $objMateriasPersonas = new Materias_personas();
+        $materias = $objMateriasPersonas->consultarMateriaDatos($id);
+        $notas = new Notas();
+        return view('estudiantes.notas',compact('materias','notas'));
     }
 
     /**

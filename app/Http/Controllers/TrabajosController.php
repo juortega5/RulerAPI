@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Trabajos;
 use App\Cursos_personas;
+use App\Materias_personas;
+use App\Materias;
 use App\Prm_cursos;
 use App\Notas;
 
@@ -30,8 +32,10 @@ class TrabajosController extends Controller
     public function create()
     {
         $objCursos = new Cursos_personas();
+        $objMaterias = new Materias_personas();
+        $materias = $objMaterias->consultarMaterias(session('id'));
         $cursos = $objCursos->consultarCursos(session('id'));
-        return view('trabajos.index',compact('cursos'));
+        return view('trabajos.index',compact('cursos','materias'));       
     }
 
     /**
@@ -47,25 +51,34 @@ class TrabajosController extends Controller
             $nombrePdf = $documento->getClientOriginalName();
             $documento->move(public_path().'/documentos/',$nombrePdf);
         }
+        if ($request->hasfile('video')) {
+            $video = $request->file('video');
+            $nombreVideo = $video->getClientOriginalName();
+            $video->move(public_path().'/documentos/',$nombreVideo);
+        }
         $objCursos = new Prm_cursos();
         $idCurso = $objCursos->buscarId($request->input('curso'));
+        $objMaterias = new Materias();
+        $idMateria = $objMaterias->buscarId($request->input('materia'));
         $trabajo = new Trabajos();
         $trabajo->id_persona = session('id');
         $trabajo->archivo = $nombrePdf;
+        $trabajo->video = $nombreVideo;
         $trabajo->descripcion = $request->input('descripcion');
         $trabajo->id_curso = $idCurso->id;
+        $trabajo->id_materia = $idMateria->id;
         $trabajo->save();
         $estado = "Se ha creado la actividad correctamente";
         $ultimoId = Trabajos::all()->last()->id;      
         $objCursosPersonas = new Cursos_personas();
-        $alumnos = $objCursosPersonas->consultarAlumnos($idCurso->id);
+        $alumnos = $objCursosPersonas->consultarAlumnos($idCurso->id,$idMateria->id);
         for ($i=0; $i <count($alumnos) ; $i++) 
         { 
             $notas = new Notas();
             $notas->id_persona = $alumnos[$i]->id;
             $notas->id_trabajo = $ultimoId;
             $notas->nota = "0";
-            $notas->archivo = "No aplica" ;
+            $notas->archivoE = "No aplica" ;
             $notas->comentario =  "No aplica";
             $notas->save();
         }
@@ -78,9 +91,13 @@ class TrabajosController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request,$id)
     {
       //return Trabajos::where('id', $id)->get();  
+        $objCursos = new Prm_cursos();
+        $idCurso = $objCursos->buscarId($request->curso);
+        $trabajos = Trabajos::buscarTrabajos($idCurso->id);
+        return view('trabajos.subTable',compact('trabajos'));
     }
 
     /**
@@ -91,10 +108,7 @@ class TrabajosController extends Controller
      */
     public function edit(Request $request,$id)
     {
-        $objCursos = new Prm_cursos();
-        $idCurso = $objCursos->buscarId($request->curso);
-        $trabajos = Trabajos::buscarTrabajos($idCurso->id);
-        return view('trabajos.subTable',compact('trabajos'));
+        
     }
 
     /**

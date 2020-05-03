@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTrabajosTable extends Migration
+class CreateMateriasPersonasTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,24 +13,17 @@ class CreateTrabajosTable extends Migration
      */
     public function up()
     {
-        Schema::create('trabajos', function (Blueprint $table) {
+        Schema::create('materias_personas', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('id_persona')->unsigned();
-            $table->string('archivo');
-            $table->string('video');
-            $table->string('descripcion');
-            $table->integer('id_curso')->unsigned();
             $table->integer('id_materia')->unsigned();
-            $table->timestamps();
+            $table->foreign('id_materia')->references('id')->on('materias')
+                    ->onUpdate('cascade')
+                    ->onDelete('cascade');
             $table->foreign('id_persona')->references('id')->on('personas')
                     ->onUpdate('cascade')
                     ->onDelete('cascade');
-            $table->foreign('id_curso')->references('id')->on('prm_cursos')
-            ->onUpdate('cascade')
-            ->onDelete('cascade');
-             $table->foreign('id_materia')->references('id')->on('materias')
-            ->onUpdate('cascade')
-            ->onDelete('cascade');
+            $table->timestamps();
         });
     }
 
@@ -41,6 +34,6 @@ class CreateTrabajosTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('trabajos');
+        Schema::dropIfExists('materias_personas');
     }
 }

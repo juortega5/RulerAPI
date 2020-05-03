@@ -21,5 +21,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::resource('personas','PersonasController');
 Route::resource('trabajos','TrabajosController');
 Route::resource('notas','NotasController');
+Route::resource('estudiantes','EstudiantesController');
 
 

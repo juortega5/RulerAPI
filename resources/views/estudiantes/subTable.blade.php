@@ -4,17 +4,14 @@
 <table class="table table-dark table-hover table-bordered table-sm">
 	<thead>
 		<tr align="center">
-			<th colspan="4">Listado de Trabajos 
-				<a  href="/api/trabajos" type="button" class="btn btn-success btn-sm">
-				  Volver
-				</a>
-			</th>
+			<th colspan="5">Listado de Trabajos</th>
 		</tr>
 	    <tr align="center">
 	      <th scope="col">Materia</th>
 	      <th scope="col">Descripcion</th>
 	      <th scope="col">Link</th>
 	      <th scope="col">Video actividad</th>
+	      <th>Cargar actividad</th>
 	    </tr>
 	</thead>
 	<tbody>
@@ -26,6 +23,7 @@
 			<th scope="col" class="embed-responsive embed-responsive-16by9">
 				<video controls src="/documentos/{{ $trabajos->video }}" type="video/ogg"></video>
 			</th>
+			<th scope="col"><a class="btn btn-success" href="/api/notas/{{$trabajos->id}}/edit">Cargar Archivo</a></th>
 		</tr>
 		@endforeach
 	</tbody>

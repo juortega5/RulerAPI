@@ -31,13 +31,21 @@ class Cursos_personas extends Model
         return $select;
 	}
 
-    public  function consultarAlumnos($id)
+    public  function consultarAlumnos($curso,$materia)
     {
-        $alumnos = personas::join('cursos_personas','cursos_personas.id_persona','=','personas.id')
-                                ->select('personas.id')
-                                ->where('cursos_personas.id_curso', $id,'AND')
+        $alumnos = personas::join('cursos_personas','cursos_personas.id_persona','=','personas.id')->
+                            join('materias_personas','materias_personas.id_persona','=','personas.id')
+                                ->select('personas.id','personas.nombre','personas.usuario')
+                                ->where('cursos_personas.id_curso', $curso,'AND')
+                                ->where('materias_personas.id_materia', $materia,'AND')
                                 ->where('personas.id_tipo_usuario', '2')->get();
         return $alumnos;
+    }
+
+    public function buscarCurso($id)
+    {
+        $curso = cursos_personas::select('id_curso')->where('id_persona',$id)->get();
+        return $curso;
     }
 
 }

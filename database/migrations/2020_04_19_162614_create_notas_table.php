@@ -18,7 +18,7 @@ class CreateNotasTable extends Migration
             $table->integer('id_persona')->unsigned();
             $table->integer('id_trabajo')->unsigned();
             $table->integer('nota')->unsigned();
-            $table->string('archivo');
+            $table->string('archivoE');
             $table->string('comentario');
             $table->timestamps();
              $table->foreign('id_persona')->references('id')->on('personas')
